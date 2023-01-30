@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>HISTORY API</title>
+
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/night.css" />
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-markdown data-separator-vertical="^\r?\n...\r?\n">
+          <script type="text/template">
+            ## HISTORY API
+            The DOM [Window]() object provides access to the browser's session history through the [history]() object.
+            It exposes useful methods and properties that let you navigate back and forward through the user's history, and manipulate the contents of the history stack.
+
+            >Definition from [MDN](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+
+            ---
+
+            ## History Properties
+              - length <!-- .element: class="fragment" data-fragment-index="1"--> ([readonly]()) <!-- .element: class="fragment" data-fragment-index="1"-->
+              - scrollRestoration <!-- .element: class="fragment" data-fragment-index="2"-->
+              - state <!-- .element: class="fragment" data-fragment-index="3"--> ([readonly]()) <!-- .element: class="fragment" data-fragment-index="3"-->
+
+            ...
+
+            ## length Property
+
+            ```js
+            window.history.length
+            //returns number of URL's in the session history stack
+            ```
+
+            ...
+
+            ## scrollRestoration
+
+            ```js
+            window.history.scrollRestoration = "auto"
+            // if the user has scrolled,
+            //then after reloading the page,
+            //the page will automatically scroll where the user was before.
+            ```
+              <!-- .element: class="fragment"-->
+
+            ```js
+            window.history.scrollRestoration = "manual"
+            // after reloading the current page,
+            //the user will be at the top of the page
+            //wherever the user was on the page before.
+            ```
+            <!-- .element: class="fragment"-->
+
+            ...
+
+            ## state Property
+
+            ```js
+            window.history.state
+            // returns the state for the current page you are.
+            ```
+
+            ---
+
+            ## History methods
+
+            - back() <!-- .element: class="fragment" data-fragment-index="1"-->
+            - forward() <!-- .element: class="fragment" data-fragment-index="2"-->
+            - go() <!-- .element: class="fragment" data-fragment-index="3"-->
+            - pushState() <!-- .element: class="fragment" data-fragment-index="4"-->
+            - replaceState() <!-- .element: class="fragment" data-fragment-index="5"-->
+
+            ...
+
+            ## back()
+
+            ```js
+            /*
+            | History stack |
+            | ------------- |
+            | Page 3 | << We are currently on this page
+            | Page 2 |
+            | Page 1 |
+            */
+            window.history.back()
+            /*
+            | History stack |
+            | ------------- |
+            | Page 3 |
+            | Page 2 | << We are now on this page
+            | Page 1 |
+            */
+            ```
+
+            ...
+
+            ## forward()
+
+            ```js
+            /*
+            | History stack |
+            | ------------- |
+            | Page 3 |
+            | Page 2 | << We are now on this page
+            | Page 1 |
+            */
+            window.history.back()
+            /*
+            | History stack |
+            | ------------- |
+            | Page 3 | << We are currently on this page
+            | Page 2 |
+            | Page 1 |
+            */
+            ```
+
+            ...
+
+            ## go()
+
+            ```js
+            window.history.go(2)
+            // will move two positions forward in history
+
+            window.history.go(-1)
+            // moves back one page similar to calling back()
+            ```
+
+            ...
+
+            ## pushState() and replaceState()
+
+            - state object <!-- .element: class="fragment" data-fragment-index="1"-->
+            - unused <!-- .element: class="fragment" data-fragment-index="2"-->
+            - newURL <!-- .element: class="fragment" data-fragment-index="3"-->
+
+            ---
+            ## Creating a simple router by using a history api
+
+            ...
+
+            ```HTML [ |9 |3-6]
+              <nav>
+                <ul>
+                  <li><a href="/" onclick="router(event)">Home</a></li>
+                  <li><a href="/about" onclick="router(event)">About</a></li>
+                  <li><a href="/contact" onclick="router(event)">Contact</a></li>
+                  <li><a href="/account" onclick="router(event)">Account</a></li>
+                </ul>
+              </nav>
+              <div id="root"></div>
+            ```
+
+            ...
+
+            ```js [ |2, 6, 10 | 3, 4, 7, 8, 11, 12]
+            const routes = [
+              { path: '/',
+                data: `<h1>Welcome to Home page.</h1>
+                      <p>A home page is the main web page of a website. The term also refers to one or more pages always shown in a web browser when the application starts up.</p>`
+              },
+              { path: '/about',
+                data: `<h1>Welcome to About page.</h1>
+                      <p>The About page is the section of a website where people go to find out about the website they're on.</p>`
+              },
+              { path: '/contact',
+                data: `<h1>Welcome to Contact page.</h1>
+                      <p>A contact page is a common web page on a website for visitors to contact the organization or individual providing the website.</p>`
+              },
+            ]
+            ```
+
+            ...
+
+            ```js [  |4 | 5 | 6, 7]
+            const root = document.getElementById('root');
+
+            function router(event) {
+              event.preventDefault();
+              history.pushState({}, 'newUrl', event.target.href);
+              let route = routes.find(route => route.path ==  window.location.pathname);
+              root.innerHTML = route.data;
+            }
+            ```
+
+            ...
+
+            ```js
+            window.addEventListener('popstate', function() {
+              let data = routes.find(route => route.path == window.location.pathname);
+              root.innerHTML = data.data;
+            });
+            ```
+
+            ...
+
+            ```js
+            window.addEventListener('DOMContentLoaded', function() {
+              let route = routes.find(route => route.path == window.location.pathname);
+              root.innerHTML = route.data;
+            });
+            ```
+
+            ---
+            ## Conclusion
+          </script>
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+        markdown: {
+          smartypants: true,
+        },
+      });
+    </script>
+  </body>
+</html>
